@@ -5,6 +5,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                     NotificationChannel channel = new NotificationChannel("default", "Default Channel",
-                    NotificationManager.IMPORTANCE_DEFAULT);
+                    NotificationManager.IMPORTANCE_HIGH);
                     channel.setDescription("This is for default notification");
                     notificationManager.createNotificationChannel(channel);
 
@@ -50,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
                 builder.setContentIntent(pIntent);
                 builder.setAutoCancel(true);
 
+                Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                builder.setSound(uri);
                 Notification n = builder.build();
 
                 notificationManager.notify(notificationID, n);
@@ -57,6 +62,55 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+            }
+        });
+
+        btnNotify2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                NotificationManager notificationManager = (NotificationManager)
+                        getSystemService(NOTIFICATION_SERVICE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationChannel channel = new
+                            NotificationChannel("default", "Default Channel",
+                            NotificationManager.IMPORTANCE_DEFAULT);
+
+                    channel.setDescription("This is for default notification");
+                    notificationManager.createNotificationChannel(channel);
+                }
+
+                Intent intent = new Intent(MainActivity.this,MainActivity.class);
+                PendingIntent pIntent = PendingIntent.getActivity
+                        (MainActivity.this, reqCode,
+                                intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+                NotificationCompat.BigTextStyle bigTextStyle = new
+                        NotificationCompat.BigTextStyle();
+                bigTextStyle.setBigContentTitle("Big Text – Long Content");
+                bigTextStyle.bigText("This is one big text" +
+                        " - A quick brown fox jumps over a lazy brown dog "+
+                        "\nLorem ipsum dolor sit amet, sea eu quod des");
+                bigTextStyle.setSummaryText("Reflection Journal?");
+
+
+
+                // Build notification
+                NotificationCompat.Builder builder = new
+                        NotificationCompat.Builder(MainActivity.this, "default");
+                builder.setContentTitle("Amazing Offer!");
+                builder.setContentText("Subject");
+                builder.setSmallIcon(android.R.drawable.btn_star_big_off);
+                builder.setContentIntent(pIntent);
+                builder.setAutoCancel(true);
+                builder.setStyle(bigTextStyle);
+
+                Notification n = builder.build();
+
+                // This replaces the existing notification with the same ID
+                notificationManager.notify(notificationID, n);
+                finish();
             }
         });
 
